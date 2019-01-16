@@ -15,3 +15,8 @@ class ConfigReader (object):
         with open(self._filename, 'r') as cfg:
             contents = cfg.read()
         self._data = json.loads(contents)
+
+    @property
+    def services_list(self):
+        """Get a list of the services provided in the config."""
+        return self._data['services']
