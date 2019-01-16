@@ -2,8 +2,8 @@
   "services": [
     {
       "name": "Nessus",
-      "start": "sudo /etc/init.d/nessusd start",
-      "stop": "sudo /etc/init.d/nessusd stop"
+      "start": "/etc/init.d/nessusd start",
+      "stop": "/etc/init.d/nessusd stop"
     }
   ]
 }
