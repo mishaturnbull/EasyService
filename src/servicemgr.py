@@ -48,19 +48,47 @@ class Service (object):
         else:
             CommandExecutor(self.stop_cmd, self.coordinator, False).start()
 
-    def check_running(self):
+    def check_running(self, store_is_running=None):
         """Returns True if the service is running, or False if it's not.
         Probabilistic -- false returns are not guaranteed, but True returns
         are guaranteed to be correct.  Uses `lsof` under the hood."""
         cmd = CommandExecutor("lsof | cut -d' ' -f1 | grep {}".format(
             self.computer_name
         ), self.coordinator)
-        cmd.start()
-        cmd.join()
-        status = parse_lsof_output(cmd.get_output()['stdout'],
-                                   self.computer_name)
-        self.is_running = status
-        return status
+        if store_is_running is None:
+            cmd.start()
+            cmd.join()
+            status = parse_lsof_output(cmd.get_output()['stdout'],
+                                       self.computer_name)
+            self.is_running = status
+            return status
+        else:
+            # store_is_running must be a bool-ish object with a .set() method
+            # i.e. a Tkinter BoolVar() or something that does the same thing
+            assert hasattr(store_is_running, 'set'), "Must be a set-able boolean"
+            def check_run():
+                cmd.start()
+                cmd.join()
+                status = parse_lsof_output(cmd.get_output()['stdout'],
+                                           self.computer_name)
+                store_is_running.set(status)
+            pce = _PyCodeExecutor(check_run, self.coordinator)
+            pce.start()
+
+
+class _PyCodeExecutor (threading.Thread):
+    """Similar to CommandExecutor, but for arbitrary Python code, not
+    Bash commands."""
+
+    def __init__(self, func, coordinator):
+        """Set up the execution thread."""
+        super(_PyCodeExecutor, self).__init__()
+        self.func = func
+        self.coordinator = coordinator
+
+    def run(self):
+        self.func()
+
 
 class CommandExecutor (threading.Thread):
 
@@ -93,3 +121,14 @@ class CommandExecutor (threading.Thread):
     def run(self):
         """Execute the command"""
         self._do_cmd()
+
+
+if __name__ == '__main__':
+    class A(object):
+        def __init__(self):
+            self.val = None
+        def set(self, q):
+            self.val = q
+    n = Service("Nessus", 'nessusd', '/etc/init.d/nessusd start',
+                '/etc/init.d/nessusd stop', 'scanning', None)
+    a = A()
