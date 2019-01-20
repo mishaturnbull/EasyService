@@ -2,16 +2,43 @@
   "categories": [
     "Networking",
     "Security",
-    "System",
-    "Scanners"
+    "System"
   ],
   "services": [
     {
       "name": "Nessus",
       "computer_name": "nessusd",
-      "category": "Scanners",
+      "category": "Security",
       "start": "/etc/init.d/nessusd start",
       "stop": "/etc/init.d/nessusd stop"
+    },
+    {
+      "name": "Apache 2",
+      "computer_name": "apache2",
+      "category": "Networking",
+      "start": "/etc/init.d/apache2 start",
+      "stop": "/etc/init.d/apache2 stop"
+    },
+    {
+      "name": "LMI Hamachi",
+      "computer_name": "logmein-hamachi",
+      "category": "Networking",
+      "start": "/etc/init.d/logmein-hamachi start",
+      "stop": "/etc/init.d/logmein-hamachi stop"
+    },
+    {
+      "name": "MySQL",
+      "computer_name": "mysql",
+      "category": "Networking",
+      "start": "/etc/init.d/mysql start",
+      "stop": "/etc/init.d/mysql stop"
+    },
+    {
+      "name": "Network Manager",
+      "computer_name": "network-manager",
+      "category": "Networking",
+      "start": "/etc/init.d/network-manager start",
+      "stop": "/etc/init.d/network-manager stop"
     }
   ]
 }
