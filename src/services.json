@@ -2,6 +2,7 @@
   "services": [
     {
       "name": "Nessus",
+      "computer_name": "nessusd",
       "start": "/etc/init.d/nessusd start",
       "stop": "/etc/init.d/nessusd stop"
     }
