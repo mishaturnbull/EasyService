@@ -1,4 +1,9 @@
 {
+  "categories": [
+    "Networking",
+    "Security",
+    "System"
+  ],
   "services": [
     {
       "name": "Nessus",
