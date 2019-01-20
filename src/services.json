@@ -2,12 +2,14 @@
   "categories": [
     "Networking",
     "Security",
-    "System"
+    "System",
+    "Scanners"
   ],
   "services": [
     {
       "name": "Nessus",
       "computer_name": "nessusd",
+      "category": "Scanners",
       "start": "/etc/init.d/nessusd start",
       "stop": "/etc/init.d/nessusd stop"
     }

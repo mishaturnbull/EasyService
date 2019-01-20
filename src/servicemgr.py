@@ -33,20 +33,30 @@ class Service (object):
         self.coordinator = coordinator
         self.is_running = None
         self.category = category
+        self.queue_auto_state_update()
+
+    def queue_auto_state_update(self):
+        """Iff the coordinator exists, and iff the GUI exists,
+        then try to auto update the state and push it to the user."""
+        if self.coordinator is not None:
+            if hasattr(self.coordinator, 'gui'):
+                self.check_running(self.coordinator.gui.variables['{}_state'])
 
     def start(self):
         """Start the service."""
         if self.is_running:
-            return
+            pass
         else:
             CommandExecutor(self.start_cmd, self.coordinator, False).start()
+        self.queue_auto_state_update()
 
     def stop(self):
         """Stop the service."""
         if not self.is_running:
-            return
+            pass
         else:
             CommandExecutor(self.stop_cmd, self.coordinator, False).start()
+        self.queue_auto_state_update()
 
     def check_running(self, store_is_running=None):
         """Returns True if the service is running, or False if it's not.
@@ -71,7 +81,7 @@ class Service (object):
                 cmd.join()
                 status = parse_lsof_output(cmd.get_output()['stdout'],
                                            self.computer_name)
-                store_is_running.set(status)
+                store_is_running.set("Running" if status else "Stopped")
             pce = _PyCodeExecutor(check_run, self.coordinator)
             pce.start()
 
