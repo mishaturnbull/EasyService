@@ -24,7 +24,7 @@ class Service (object):
     """Represents a service that can be started/stopped/etc."""
 
     def __init__(self, friendly_name, computer_name, start_cmd, stop_cmd,
-                 coordinator):
+                 category, coordinator):
         """Create a Service object that can be started or stopped."""
         self.friendly_name = friendly_name
         self.computer_name = computer_name
@@ -32,6 +32,7 @@ class Service (object):
         self.stop_cmd = stop_cmd
         self.coordinator = coordinator
         self.is_running = None
+        self.category = category
 
     def start(self):
         """Start the service."""
