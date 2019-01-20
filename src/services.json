@@ -39,6 +39,20 @@
       "category": "Networking",
       "start": "/etc/init.d/network-manager start",
       "stop": "/etc/init.d/network-manager stop"
+    },
+    {
+      "name": "BeEF",
+      "computer_name": "beef-xss",
+      "category": "Security",
+      "start": "service beef-xss start",
+      "stop": "service beef-xss stop"
+    },
+    {
+      "name": "Dradis",
+      "computer_name": "dradis",
+      "category": "Security",
+      "start": "service dradis start",
+      "stop": "service dradis stop"
     }
   ]
 }
