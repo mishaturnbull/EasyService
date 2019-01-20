@@ -40,7 +40,9 @@ class Service (object):
         then try to auto update the state and push it to the user."""
         if self.coordinator is not None:
             if hasattr(self.coordinator, 'gui'):
-                self.check_running(self.coordinator.gui.variables['{}_state'])
+                self.check_running(self.coordinator.gui.variables[
+                                       '{}_state'.format(self.computer_name)
+                                   ])
 
     def start(self):
         """Start the service."""
