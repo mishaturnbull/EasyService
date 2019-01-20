@@ -3,20 +3,91 @@
 
 import threading
 import subprocess
+import functools
 
+
+@functools.lru_cache()
+def parse_lsof_output(output, desired_service):
+    """Given a text output from an lsof command run,
+    see if a service is running or not."""
+    lines = output.split('\n')
+    for line in lines:
+        l = line.strip()
+        if not l.startswith(desired_service):
+            continue
+        else:
+            return True
+    return False
+
+
+class Service (object):
+    """Represents a service that can be started/stopped/etc."""
+
+    def __init__(self, friendly_name, computer_name, start_cmd, stop_cmd,
+                 coordinator):
+        """Create a Service object that can be started or stopped."""
+        self.friendly_name = friendly_name
+        self.computer_name = computer_name
+        self.start_cmd = start_cmd
+        self.stop_cmd = stop_cmd
+        self.coordinator = coordinator
+        self.is_running = None
+
+    def start(self):
+        """Start the service."""
+        if self.is_running:
+            return
+        else:
+            CommandExecutor(self.start_cmd, self.coordinator, False).start()
+
+    def stop(self):
+        """Stop the service."""
+        if not self.is_running:
+            return
+        else:
+            CommandExecutor(self.stop_cmd, self.coordinator, False).start()
+
+    def check_running(self):
+        """Returns True if the service is running, or False if it's not.
+        Probabilistic -- false returns are not guaranteed, but True returns
+        are guaranteed to be correct.  Uses `lsof` under the hood."""
+        cmd = CommandExecutor("lsof | cut -d' ' -f1 | grep {}".format(
+            self.computer_name
+        ), self.coordinator)
+        cmd.start()
+        cmd.join()
+        status = parse_lsof_output(cmd.get_output()['stdout'],
+                                   self.computer_name)
+        self.is_running = status
+        return status
 
 class CommandExecutor (threading.Thread):
 
-    def __init__(self, command, coordinator):
+    def __init__(self, command, coordinator, suppress_stderr=True):
         """Do something"""
         super(CommandExecutor, self).__init__()
 
         self._command = command
         self.coordinator = coordinator
+        self._result = None
+        self.suppress_stderr = suppress_stderr
 
     def _do_cmd(self):
         """Internal execution"""
-        subprocess.run(self._command,)
+        self._result = subprocess.run(self._command, capture_output=True,
+                                      shell=True)
+        output = self.get_output()
+        if output['stderr'] != '' and not self.suppress_stderr:
+            print(output['stderr'])
+
+    @functools.lru_cache(maxsize=None)
+    def get_output(self):
+        """Return the string version of the completed StdOut from the command."""
+        out = {}
+        out.update(returncode=self._result.returncode,
+                   stdout=self._result.stdout.decode('utf-8'),
+                   stderr=self._result.stderr.decode('utf-8'))
+        return out
 
     def run(self):
         """Execute the command"""
