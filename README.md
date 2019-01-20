@@ -1,4 +1,4 @@
-# EasySource
+# EasyService
 
 Aims to be a easy, graphical, service manager for Linux platforms.
 
