@@ -64,7 +64,7 @@ class Service (object):
         """Returns True if the service is running, or False if it's not.
         Probabilistic -- false returns are not guaranteed, but True returns
         are guaranteed to be correct.  Uses `lsof` under the hood."""
-        cmd = CommandExecutor("lsof | cut -d' ' -f1 | grep {}".format(
+        cmd = CommandExecutor("lsof | tr -s ' ' | cut -d' ' -f1,4 | grep {}".format(
             self.computer_name
         ), self.coordinator)
         if store_is_running is None:
