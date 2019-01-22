@@ -59,6 +59,7 @@ class Service (object):
         else:
             self._send_status("Starting...")
             CommandExecutor(self.start_cmd, self.coordinator, False).start()
+            self.is_running = True
         self.queue_auto_state_update()
 
     def stop(self):
@@ -68,6 +69,7 @@ class Service (object):
         else:
             self._send_status("Stopping...")
             CommandExecutor(self.stop_cmd, self.coordinator, False).start()
+            self.is_running = False
         self.queue_auto_state_update()
 
     def check_running(self, store_is_running=None):
@@ -88,6 +90,7 @@ class Service (object):
             # store_is_running must be a bool-ish object with a .set() method
             # i.e. a Tkinter BoolVar() or something that does the same thing
             assert hasattr(store_is_running, 'set'), "Must be a set-able boolean"
+
             def check_run():
                 cmd.start()
                 cmd.join()
