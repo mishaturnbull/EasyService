@@ -53,6 +53,14 @@
       "category": "Security",
       "start": "service dradis start",
       "stop": "service dradis stop"
-    }
+    },
+    {
+      "name": "NginX",
+      "computer_name": "nginx",
+      "category": "Networking",
+      "start": "systemctl start nginx",
+      "stop": "systemctl stop nginx"
+    },
+
   ]
 }
