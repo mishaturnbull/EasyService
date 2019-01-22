@@ -44,11 +44,20 @@ class Service (object):
                                        '{}_state'.format(self.computer_name)
                                    ])
 
+    def _send_status(self, status_msg):
+        """Send a status message update to the GUI"""
+        if hasattr(self.coordinator, 'gui'):
+            statemsg = self.coordinator.gui.variables[
+                '{}_state'.format(self.computer_name)
+            ]
+            statemsg.set(status_msg)
+
     def start(self):
         """Start the service."""
         if self.is_running:
             pass
         else:
+            self._send_status("Starting...")
             CommandExecutor(self.start_cmd, self.coordinator, False).start()
         self.queue_auto_state_update()
 
@@ -57,6 +66,7 @@ class Service (object):
         if not self.is_running:
             pass
         else:
+            self._send_status("Stopping...")
             CommandExecutor(self.stop_cmd, self.coordinator, False).start()
         self.queue_auto_state_update()
 
