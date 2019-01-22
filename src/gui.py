@@ -81,10 +81,11 @@ class ServiceManagerGUI (object):
     def _add_service_line(self, service, root, row):
         """Given a Service object, add a line in the GUI for it"""
         self._add_label(service.friendly_name, root=root, row=row, column=0)
-        self._add_changinglabel('Status',
+        self._add_changinglabel('Checking...',
                                 '{}_state'.format(service.computer_name),
                                 root=root,
                                 row=row, column=1)
+        service.queue_auto_state_update()
         self._add_button('Start', service.start, root=root, row=row,
                          column=2)
         self._add_button('Stop', service.stop, root=root, row=row,
