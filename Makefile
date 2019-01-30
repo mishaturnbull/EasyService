@@ -11,6 +11,8 @@ cflags = -F -y --specpath build --clean -n $(outout) $(hiddenimports)
 
 targetdir = /usr/local/bin
 
+all: preclean main postclean
+
 clean: preclean postclean
 
 preclean:
