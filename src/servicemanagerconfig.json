@@ -60,7 +60,7 @@
       "category": "Networking",
       "start": "systemctl start nginx",
       "stop": "systemctl stop nginx"
-    },
+    }
 
   ]
 }

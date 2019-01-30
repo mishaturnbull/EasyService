@@ -8,7 +8,7 @@ class Coordinator (object):
 
     def __init__(self):
         """Instantiate the program.  No arguments."""
-        self.config = ConfigReader('services.json', self)
+        self.config = ConfigReader('servicemanagerconfig.json', self)
         self.config.read()
         self.gui = ServiceManagerGUI(self)
         self.gui.start()
