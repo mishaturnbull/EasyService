@@ -7,7 +7,7 @@ output = servicemanager
 
 hiddenimports = --hidden-import functools
 
-cflags = -F -y --specpath build --clean -n $(outout) $(hiddenimports)
+cflags = -F -y --specpath build --clean -n $(output) $(hiddenimports)
 
 targetdir = /usr/local/bin
 
@@ -30,8 +30,11 @@ main:
 install:
 	-mkdir $(targetdir)/servicemanager
 	cp dist/$(output) $(targetdir)/servicemanager
-	chmod a+x $(targetdir)/servicemanager
+	chmod a+x $(targetdir)/servicemanager/$(output)
 	cp $(config) $(targetdir)/servicemanager
+	printf "#!/bin/bash\ncd $(targetdir)/servicemanager/\n./servicemanager" > $(targetdir)/servicemgr
+	chmod a+x $(targetdir)/servicemgr
 
 uninstall:
 	-rm -rf $(targetdir)/servicemanager
+	-rm -rf $(targetdir)/servicemgr
