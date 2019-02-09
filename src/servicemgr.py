@@ -87,7 +87,7 @@ class Service (object):
             status = parse_lsof_output(cmd.get_output()['stdout'],
                                        self.computer_name)
             return status
-        
+
         if store_is_running is None:
             self.is_running = _is_running()
             return self.is_running
@@ -136,7 +136,6 @@ class CommandExecutor (threading.Thread):
         if output['stderr'] != '' and not self.suppress_stderr:
             print(output['stderr'])
 
-    @functools.lru_cache(maxsize=2)
     def get_output(self):
         """Return the string version of the completed StdOut from the command."""
         out = {}
