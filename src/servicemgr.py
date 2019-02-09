@@ -76,26 +76,28 @@ class Service (object):
         """Returns True if the service is running, or False if it's not.
         Probabilistic -- false returns are not guaranteed, but True returns
         are guaranteed to be correct.  Uses `lsof` under the hood."""
-        cmd = CommandExecutor("lsof | tr -s ' ' | cut -d' ' -f1,4 | grep {}".format(
-            self.computer_name
-        ), self.coordinator)
-        if store_is_running is None:
+
+        def _is_running():
+
+            cmd = CommandExecutor("lsof | tr -s ' ' | cut -d' ' -f1,4 | grep {}".format(
+                self.computer_name
+            ), self.coordinator)
             cmd.start()
             cmd.join()
             status = parse_lsof_output(cmd.get_output()['stdout'],
                                        self.computer_name)
-            self.is_running = status
             return status
+        
+        if store_is_running is None:
+            self.is_running = _is_running()
+            return self.is_running
         else:
             # store_is_running must be a bool-ish object with a .set() method
             # i.e. a Tkinter BoolVar() or something that does the same thing
             assert hasattr(store_is_running, 'set'), "Must be a set-able boolean"
 
             def check_run():
-                cmd.start()
-                cmd.join()
-                status = parse_lsof_output(cmd.get_output()['stdout'],
-                                           self.computer_name)
+                status = _is_running()
                 store_is_running.set("Running" if status else "Stopped")
             pce = _PyCodeExecutor(check_run, self.coordinator)
             pce.start()
@@ -134,10 +136,12 @@ class CommandExecutor (threading.Thread):
         if output['stderr'] != '' and not self.suppress_stderr:
             print(output['stderr'])
 
-    @functools.lru_cache(maxsize=None)
+    @functools.lru_cache(maxsize=2)
     def get_output(self):
         """Return the string version of the completed StdOut from the command."""
         out = {}
+        if self._result is None:
+            return
         out.update(returncode=self._result.returncode,
                    stdout=self._result.stdout.decode('utf-8'),
                    stderr=self._result.stderr.decode('utf-8'))
